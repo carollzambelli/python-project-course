@@ -11,6 +11,10 @@ anterior. Recomenda-se segui-los em ordem:
 | [04_exploracao_visual.ipynb](04_exploracao_visual.ipynb) | Parte 3.2 — exploração visual com `matplotlib`/`seaborn`, interpretação de gráficos |
 | [05_sqlite_persistencia.ipynb](05_sqlite_persistencia.ipynb) | Parte 4 — persistência com `sqlite3` puro e depois com `SQLAlchemy` |
 | [06_boas_praticas_python.ipynb](06_boas_praticas_python.ipynb) | Parte 5 — boas práticas de Python: type hints (`\| None`, `@dataclass`), `try`/`except` específico e `logging` com níveis, aplicados à função de extração da Parte 1 |
+| [07_polars.ipynb](07_polars.ipynb) | Parte 6 — introdução ao `Polars` como alternativa ao pandas: sintaxe de expressões (`pl.col`), `group_by`/`agg`, `join`, janelas com `.over()`, modo lazy (`scan_csv`/`.collect()`) e comparação de desempenho, usando os mesmos dados tratados nas Partes 2 e 3 |
+| [08_exercicios_agregacoes_sqlite.ipynb](08_exercicios_agregacoes_sqlite.ipynb) | 10 exercícios (enunciado + dicas, sem gabarito) revisitando a Parte 3 (`groupby`, `rolling`, `pivot_table`, `merge`, `apply`/`np.select`) e a Parte 5 (`sqlite3`, `UPSERT`, SQLAlchemy Core) sobre os mesmos dados do projeto |
+| [09_gabarito_agregacoes_sqlite.ipynb](09_gabarito_agregacoes_sqlite.ipynb) | Resolução comentada dos 10 exercícios do notebook anterior, executada de ponta a ponta contra os dados reais (inclui as tabelas `clima_semanal` e `cidades` novas em `data/clima.db`) |
+| [10_exercicios_exploracao_visual.ipynb](10_exercicios_exploracao_visual.ipynb) | 8 exercícios (enunciado + dicas + interpretação esperada, sem código de solução) revisitando a Parte 3.2 (`matplotlib`/`seaborn`: boxplot, série temporal, médias móveis, scatter, heatmap de correlação, heatmap comparativo, barras) sobre as bases geradas nas Partes 1 a 3 |
 
 O restante deste documento é a referência teórica de SQLite e SQLAlchemy usada na
 Parte 4 e reaproveitada em produção por [`src/clima_pipeline/load/sqlite_repository.py`](../src/clima_pipeline/load/sqlite_repository.py).

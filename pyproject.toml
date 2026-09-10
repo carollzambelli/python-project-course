@@ -27,6 +27,7 @@ docs = [
 ]
 notebooks = [
     "seaborn>=0.13",
+    "polars>=1.0",
 ]
 
 [tool.setuptools.packages.find]

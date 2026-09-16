@@ -147,7 +147,6 @@ docs/
 ├── api/
 │   ├── index.rst      # toctree da referência de código
 │   ├── config.rst      # automodule: clima_pipeline.config
-│   ├── logging_config.rst
 │   ├── pipeline.rst
 │   ├── extract.rst
 │   ├── transform.rst   # cleaner.py + aggregator.py

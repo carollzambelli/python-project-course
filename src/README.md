@@ -124,27 +124,36 @@ mypy src/clima_pipeline
 ## Logging
 
 **Nunca** use `print()` para diagnóstico em código de produção — não dá para
-filtrar por severidade, não tem timestamp, não vai para arquivo, não pode ser
-desligado seletivamente. Este pacote centraliza logging em
-[`logging_config.py`](clima_pipeline/logging_config.py):
+filtrar por severidade, não tem timestamp, não pode ser desligado
+seletivamente. Este pacote configura logging com o mínimo necessário, direto
+em [`config.py`](clima_pipeline/config.py):
 
 ```python
-def setup_logging(level: str | None = None) -> None:
-    """Configura o logger raiz uma única vez (chamadas repetidas são no-op)."""
-    ...
-    logging.basicConfig(level=nivel, handlers=[console_handler, arquivo_handler])
+LOG_LEVEL = os.getenv("CLIMA_LOG_LEVEL", "INFO")
+logging.basicConfig(
+    level=getattr(logging, LOG_LEVEL, logging.INFO),
+    format="%(asctime)s | %(levelname)-8s | %(name)s | %(message)s",
+)
 ```
 
 Pontos importantes desse design:
 
-- **Configuração central, uso descentralizado**: `setup_logging()` é chamado
-  uma única vez (no `main()` do pipeline, no `lifespan` da API) — cada módulo
-  só faz `logger = logging.getLogger(__name__)` no topo e usa `logger.info(...)`,
-  `logger.warning(...)`, etc. Usar `__name__` faz o log já vir identificado com
-  o módulo de origem (`clima_pipeline.transform.cleaner`, por exemplo).
-- **Dois destinos (handlers)**: console (para acompanhar em tempo real) e
-  arquivo rotativo (`RotatingFileHandler`, `logs/pipeline.log`, até 3 arquivos
-  de 1MB) — para investigar depois sem lotar o disco.
+- **Configuração central, uso descentralizado**: como `config.py` é
+  importado por todo o pacote (pipeline, API, dashboard), essa configuração
+  roda uma única vez assim que qualquer módulo importa `clima_pipeline.config`
+  — não existe uma função `setup_logging()` separada para chamar em cada
+  ponto de entrada. Cada módulo só faz `logger = logging.getLogger(__name__)`
+  no topo e usa `logger.info(...)`, `logger.warning(...)`, etc. Usar
+  `__name__` faz o log já vir identificado com o módulo de origem
+  (`clima_pipeline.transform.cleaner`, por exemplo). `logging.basicConfig`
+  só tem efeito na primeira chamada — chamadas seguintes (de outros módulos
+  importando `config` de novo) são ignoradas automaticamente, sem precisar de
+  nenhuma trava manual.
+- **Só console, de propósito**: sem arquivo de log nem rotação — para um
+  pipeline que roda por segundos e cujo objetivo aqui é didático, a saída no
+  console já é suficiente, e é bem menos configuração para entender de
+  cabeça. Se o projeto crescesse a ponto de precisar investigar execuções
+  passadas, um `RotatingFileHandler` seria o próximo passo natural.
 - **Níveis de severidade**, do menos ao mais grave:
   `DEBUG` < `INFO` < `WARNING` < `ERROR` < `CRITICAL`. Uso no pacote:
   - `logger.debug(...)` — detalhe só relevante para depuração fina (ex.: "JSON

@@ -10,11 +10,19 @@ logger = logging.getLogger(__name__)
 
 
 class OpenMeteoClient:
-    """Responsável apenas por falar com a API (extração)."""
+    """Responsável apenas por falar com a API (extração).
+
+    Esta classe não trata nem interpreta os dados — só sabe montar a
+    requisição HTTP certa e devolver o JSON puro que a API respondeu. Quem
+    limpa/interpreta esse JSON é a camada de transform (ClimaCleaner).
+    """
 
     def __init__(self, base_url: str = OPENMETEO_BASE_URL, timeout: int = 30):
         self.base_url = base_url
         self.timeout = timeout
+        # Usar uma Session (em vez de requests.get direto) reaproveita a
+        # conexão TCP entre requisições — como o pipeline faz uma chamada
+        # por cidade, isso evita reabrir conexão a cada uma.
         self._session = requests.Session()
 
     def fetch_historical(self, city: str, start: str, end: str) -> dict:
@@ -24,11 +32,16 @@ class OpenMeteoClient:
         não estiver cadastrado e `requests.HTTPError` se a API responder com erro.
         """
         if city not in CIDADES:
+            # Falha rápido e com mensagem clara em vez de deixar o KeyError
+            # "cru" do dicionário (que só diria a chave, sem sugerir opções).
             raise KeyError(
                 f"Cidade '{city}' não está cadastrada em config.CIDADES. "
                 f"Cidades disponíveis: {sorted(CIDADES)}"
             )
 
+        # Traduz o slug para lat/lon (a API do Open-Meteo trabalha com
+        # coordenadas, não com nomes de cidade) e delega para o método que
+        # sabe montar a requisição.
         info = CIDADES[city]
         logger.info("Buscando clima de %s (%s a %s)", info["nome_exibicao"], start, end)
         return self.fetch_by_coordinates(info["lat"], info["lon"], start, end)
@@ -40,18 +53,15 @@ class OpenMeteoClient:
             "longitude": lon,
             "start_date": start,
             "end_date": end,
+            # A API espera as variáveis horárias como uma string separada
+            # por vírgula (ex.: "temperature_2m,relative_humidity_2m,...").
             "hourly": ",".join(VARIAVEIS_HORARIAS),
             "timezone": TIMEZONE,
         }
         resposta = self._session.get(self.base_url, params=params, timeout=self.timeout)
+        # Se a API responder com erro HTTP (4xx/5xx), levanta uma exceção
+        # aqui mesmo — decidir o que fazer com esse erro (logar, tentar de
+        # novo, etc.) é responsabilidade de quem chamou fetch_historical,
+        # não desta camada de extração.
         resposta.raise_for_status()
         return resposta.json()
-
-    def close(self) -> None:
-        self._session.close()
-
-    def __enter__(self) -> "OpenMeteoClient":
-        return self
-
-    def __exit__(self, *exc_info) -> None:
-        self.close()

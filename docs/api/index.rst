@@ -8,7 +8,6 @@ de ``src/clima_pipeline``.
    :maxdepth: 2
 
    config
-   logging_config
    pipeline
    extract
    transform

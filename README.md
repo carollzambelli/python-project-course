@@ -51,8 +51,7 @@ src/
     ├── load/               # SQLiteRepository — persistência (upsert)
     ├── pipeline.py         # ClimaPipeline — orquestra tudo, com CLI
     ├── api/                # FastAPI (main.py + schemas.py)
-    ├── dashboard/          # Streamlit (app.py), consome a API — nunca o banco direto
-    └── logging_config.py   # logging central (console + logs/pipeline.log)
+    └── dashboard/          # Streamlit (app.py), consome a API — nunca o banco direto
 data/
 ├── raw/                # JSON bruto por cidade
 ├── processed/          # CSVs intermediários gerados pelos notebooks
@@ -121,7 +120,7 @@ python -m clima_pipeline.pipeline --cidades sao_paulo recife --inicio 2025-01-01
 ```
 
 Isso popula `data/raw/`, `data/clima.db` (tabelas `clima_raw` e `clima_diario`) e
-grava logs em `logs/pipeline.log`.
+imprime logs no console (nível configurável via `CLIMA_LOG_LEVEL`).
 
 ## Rodando a API
 
@@ -129,9 +128,8 @@ grava logs em `logs/pipeline.log`.
 uvicorn clima_pipeline.api.main:app --reload
 ```
 
-Endpoints: `/health`, `/cidades`, `/clima/diario?cidade=...&inicio=...&fim=...`,
-`/clima/comparativo?cidades=SP,RJ&variavel=temp_media`. Docs interativas em
-`/docs`.
+Endpoints: `/health`, `/cidades`, `/clima/diario?cidade=...&inicio=...&fim=...`.
+Docs interativas em `/docs`.
 
 Acesse `localhost:8000/docs` para documentação Swagger
 

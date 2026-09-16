@@ -17,11 +17,15 @@ do ciclo de execução do Streamlit):
 
 ``carregar_diario(base_url, slug, inicio, fim)``
    Busca ``GET /clima/diario`` para uma cidade e período. Cacheada por 60s.
+   Chamada uma vez por cidade selecionada; os resultados são concatenados
+   num único ``DataFrame`` (``diario``) usado pelos dois gráficos e pela
+   tabela final.
 
-``carregar_comparativo(base_url, slugs, variavel)``
-   Busca ``GET /clima/comparativo`` para múltiplas cidades e uma variável
-   numérica, devolvendo um ``DataFrame`` pivotado (índice = data, colunas =
-   cidade). Cacheada por 60s.
+O comparativo entre cidades não faz uma chamada extra à API: é montado a
+partir do próprio ``diario`` com ``diario.pivot_table(index="data",
+columns="nome_exibicao", values=variavel)`` — a API só expõe o dado por
+cidade (``/clima/diario``), e toda comparação/apresentação fica no
+dashboard.
 
 Como rodar: veja a seção "Rodando o dashboard" no
 `README do projeto <../../README.md>`_.

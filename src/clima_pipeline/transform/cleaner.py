@@ -112,3 +112,23 @@ class ClimaCleaner:
     def _padronizar_colunas(self, df: pd.DataFrame) -> pd.DataFrame:
         """Último passo: troca os nomes técnicos da API pelos nomes finais em português."""
         return df.rename(columns=_RENOMEIA_COLUNAS)
+
+
+if __name__ == "__main__":
+    # Entrada mockada: simula o JSON que a API do Open-Meteo devolveria (com
+    # um valor faltante e um outlier propositais) para testar clean()
+    # isoladamente, sem chamar a API de verdade.
+    raw_mock = {
+        "hourly": {
+            "time": [f"2025-01-01T0{h}:00" for h in range(8)],
+            "temperature_2m": [22.5, None, 21.8, 22.0, 21.5, 22.2, 21.9, 22.1],
+            "relative_humidity_2m": [80, 81, 83, 82, 79, 80, 81, 82],
+            "precipitation": [0.0, 0.0, 1.2, 0.0, 0.0, 0.0, 0.0, 0.0],
+            # Vento com 7 valores "normais" e 1 outlier proposital (500) — o
+            # detector de outliers (IQR) precisa de várias amostras normais
+            # para estabelecer uma faixa estável; com poucos pontos, o
+            # próprio outlier distorce os quartis e passa despercebido.
+            "wind_speed_10m": [10.2, 9.8, 11.0, 9.5, 10.5, 10.0, 9.9, 500.0],
+        }
+    }
+    print(ClimaCleaner().clean(raw_mock, city="sao_paulo"))

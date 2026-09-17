@@ -6,7 +6,7 @@ import pandas as pd
 from sqlalchemy import Column, Float, Integer, MetaData, String, Table, create_engine, select
 from sqlalchemy.dialects.sqlite import insert as sqlite_upsert
 
-from clima_pipeline.config import DB_PATH
+from clima_pipeline.config import DATA_DIR, DB_PATH
 
 logger = logging.getLogger(__name__)
 
@@ -141,3 +141,44 @@ class SQLiteRepository:
     def dispose(self) -> None:
         """Fecha as conexões do engine. Chamado no encerramento da API (veja api/main.py)."""
         self.engine.dispose()
+
+
+if __name__ == "__main__":
+    # Entrada mockada: usa um arquivo .db de teste separado, na mesma pasta
+    # do banco real (DATA_DIR), para testar save_raw/save_daily/get_daily
+    # isolados sem mexer no data/clima.db de verdade. Como é um arquivo em
+    # disco (não ":memory:"), dá para inspecionar depois com
+    # `sqlite3 data/clima_teste.db`.
+    db_path_teste = DATA_DIR / "clima_teste.db"
+    repo = SQLiteRepository(db_path=db_path_teste)
+
+    df_raw_mock = pd.DataFrame({
+        "cidade": ["sao_paulo", "sao_paulo"],
+        "datetime": ["2025-01-01 00:00:00", "2025-01-01 01:00:00"],
+        "temp_c": [22.5, 22.1],
+        "umidade_pct": [80.0, 82.0],
+        "precipitacao_mm": [0.0, 0.0],
+        "vento_kmh": [10.2, 9.8],
+    })
+    repo.save_raw(df_raw_mock)
+
+    df_diario_mock = pd.DataFrame({
+        "cidade": ["sao_paulo"],
+        "data": ["2025-01-01"],
+        "temp_media": [22.3],
+        "temp_min": [22.1],
+        "temp_max": [22.5],
+        "umidade_media": [81.0],
+        "precipitacao_total": [0.0],
+        "vento_medio": [10.0],
+        "categoria_temp": ["ameno"],
+        "categoria_chuva": ["seco"],
+        "media_movel_3d": [22.3],
+        "media_movel_7d": [22.3],
+        "ranking_temp_dia": [1],
+        "indice_conforto_c": [22.3],
+    })
+    repo.save_daily(df_diario_mock)
+
+    print(repo.get_daily("sao_paulo"))
+    repo.dispose()

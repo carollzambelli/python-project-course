@@ -107,3 +107,20 @@ class ClimaAggregator:
         diario["indice_conforto_c"] = diario.apply(_calcular_indice_conforto, axis=1)
 
         return diario
+
+
+if __name__ == "__main__":
+    # Entrada mockada: simula o DataFrame horário (saída de
+    # ClimaCleaner.clean()) para testar build_daily_view() isoladamente.
+    df_horario_mock = pd.DataFrame({
+        "cidade": ["sao_paulo"] * 4,
+        "datetime": pd.to_datetime([
+            "2025-01-01 00:00", "2025-01-01 12:00",
+            "2025-01-02 00:00", "2025-01-02 12:00",
+        ]),
+        "temp_c": [20.0, 26.0, 21.0, 30.0],
+        "umidade_pct": [70.0, 60.0, 75.0, 55.0],
+        "precipitacao_mm": [0.0, 2.5, 0.0, 0.0],
+        "vento_kmh": [5.0, 12.0, 8.0, 15.0],
+    })
+    print(ClimaAggregator().build_daily_view(df_horario_mock))

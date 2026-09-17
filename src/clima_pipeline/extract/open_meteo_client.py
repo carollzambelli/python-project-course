@@ -65,3 +65,27 @@ class OpenMeteoClient:
         # não desta camada de extração.
         resposta.raise_for_status()
         return resposta.json()
+
+
+if __name__ == "__main__":
+    # Entrada mockada: substitui a sessão HTTP por uma resposta falsa, para
+    # testar fetch_historical() sem depender de rede nem da API real.
+    from unittest.mock import MagicMock
+
+    resposta_mock = MagicMock()
+    resposta_mock.raise_for_status.return_value = None
+    resposta_mock.json.return_value = {
+        "hourly": {
+            "time": ["2025-01-01T00:00", "2025-01-01T01:00"],
+            "temperature_2m": [22.5, 22.1],
+            "relative_humidity_2m": [80, 82],
+            "precipitation": [0.0, 0.0],
+            "wind_speed_10m": [10.2, 9.8],
+        }
+    }
+
+    client = OpenMeteoClient()
+    client._session.get = MagicMock(return_value=resposta_mock)
+
+    resultado = client.fetch_historical("sao_paulo", "2025-01-01", "2025-01-01")
+    print(resultado)

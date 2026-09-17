@@ -8,7 +8,6 @@ campos existem e de que tipo é cada um. O FastAPI usa essas classes para:
 """
 
 import datetime as dt
-
 from pydantic import BaseModel
 
 

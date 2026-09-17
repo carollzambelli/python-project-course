@@ -114,7 +114,6 @@ logging.basicConfig(
     format="%(asctime)s | %(levelname)-8s | %(name)s | %(message)s",
 )
 
-
 def resolver_slug_cidade(identificador: str) -> str | None:
     """Aceita slug, nome de exibição ou UF e devolve o slug correspondente.
 
@@ -142,3 +141,12 @@ def resolver_slug_cidade(identificador: str) -> str | None:
     # Nenhuma das três formas bateu — quem chamou decide o que fazer com
     # None (a API, por exemplo, transforma isso em um erro 404).
     return None
+
+
+if __name__ == "__main__":
+    # Entrada mockada: roda `python -m clima_pipeline.config` para testar
+    # resolver_slug_cidade() isoladamente (slug, UF, nome de exibição e um
+    # valor inexistente), sem precisar da API nem do banco.
+    entradas_mock = ["sao_paulo", "SP", "Rio de Janeiro", "cidade_inexistente"]
+    for entrada in entradas_mock:
+        print(f"{entrada} -> {resolver_slug_cidade(entrada)!r}")

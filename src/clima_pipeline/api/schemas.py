@@ -37,13 +37,13 @@ class ClimaDiarioOut(BaseModel):
     API formal.
     """
 
-    cidade: str
+    cidade: str 
     data: dt.date
     temp_media: float
     temp_min: float
     temp_max: float
     umidade_media: float
-    precipitacao_total: float
+    precipitacao_total: float 
     vento_medio: float
     categoria_temp: str
     categoria_chuva: str

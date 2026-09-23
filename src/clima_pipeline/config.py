@@ -37,6 +37,7 @@ for _dir in (RAW_DIR, PROCESSED_DIR):
 OPENMETEO_BASE_URL = os.getenv(
     "OPENMETEO_BASE_URL", "https://archive-api.open-meteo.com/v1/archive"
 )
+
 # Quais variáveis climáticas horárias pedimos à API — usado em
 # extract/open_meteo_client.py para montar o parâmetro "hourly" da requisição.
 VARIAVEIS_HORARIAS = [

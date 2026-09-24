@@ -168,13 +168,11 @@ no código. Por isso, antes de começar, **renomeie** estes dois arquivos
 | Arquivo atual | Renomeie para |
 |---------------|---------------|
 | `data/clima.db` | `data/clima_backup.db` |
-| `data/clima_teste.db` | `data/clima_teste_backup.db` |
 
 Quando você rodar o pipeline de novo, um banco novo, já com as colunas novas,
 será criado automaticamente.
 
 ---
-
 ### Parte A — Adicionar Belém e Curitiba
 
 #### Passo A1 — Cadastrar as cidades

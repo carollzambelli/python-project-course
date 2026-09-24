@@ -151,7 +151,7 @@ cd docs && make html
 
 Sirva a pasta gerada por um servidor HTTP local e abra no navegador (abrir o
 `index.html` direto como `file://` quebra o CSS e os links entre páginas,
-pois o navegador bloqueia esses recursos por segurança):
+pois o navegador bloqueia esses recursos por segurança). Ou volte para a raiz do projeto e execute:
 
 ```bash
 python3 -m http.server 8001 --directory docs/_build/html & open http://localhost:8001

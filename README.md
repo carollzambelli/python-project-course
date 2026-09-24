@@ -144,6 +144,14 @@ Requer a API rodando (o dashboard consome os endpoints acima, nunca acessa
 
 ## Gerando a documentação (Sphinx)
 
+Com os códigos documentados, a documentação pode ser gerada apenas executando (na raiz do projeto):
+
+```bash
+sphinx-quickstart docs
+```
+
+Para quem estiver clonando o projeto:
+
 ```bash
 pip install -e ".[docs]"
 cd docs && make html
